@@ -1,0 +1,22 @@
+# PlatformIO
+.pio/
+.vscode/
+.pioenvs/
+.piolibdeps/
+*.pyc
+*.pyd
+*.pyo
+__pycache__/
+lib_deps/
+
+# Arduino
+*.elf
+*.bin
+*.hex
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Sensitive
+credentials.cpp
