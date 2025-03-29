@@ -1,13 +1,17 @@
+// FirebaseManager.h
 #ifndef FIREBASE_MANAGER_H
 #define FIREBASE_MANAGER_H
 
 #include <Firebase.h>
+#include "TimeManager.h"
 
 class FirebaseManager
 {
 public:
-    FirebaseManager(FirebaseConfig *cfg, FirebaseAuth *auth, FirebaseData *data);
+    // Update the constructor to include TimeManager
+    FirebaseManager(FirebaseConfig *cfg, FirebaseAuth *auth, FirebaseData *data, TimeManager *timeMgr);
     void begin();
+
     bool pushSensorData(const String &logPath,
                         bool tempOk, float temp,
                         bool humOk, float hum,
@@ -19,6 +23,7 @@ private:
     FirebaseConfig *config;
     FirebaseAuth *auth;
     FirebaseData *firebaseData;
+    TimeManager *timeManager; // ✅ Store pointer to TimeManager
 };
 
 #endif

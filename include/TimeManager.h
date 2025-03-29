@@ -16,6 +16,7 @@ public:
     String getFormattedTime() const;
     String getDatePath() const;
     String getFullTimestamp() const;
+    time_t getEpochTime() const;
 
 private:
     NTPClient *_client;

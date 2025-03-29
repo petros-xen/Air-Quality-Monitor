@@ -32,12 +32,16 @@ void OLED_Display::showSensorData(float temp, bool tempOk,
                                   float hum, bool humOk,
                                   float pressure, bool pressureOk,
                                   const String &airQualityLabel,
-                                  float pm25)
+                                  float pm25,
+                                  const String &timestamp)
 {
     _display.clearDisplay();
     _display.setTextSize(1);
     _display.setTextColor(WHITE);
     _display.setCursor(0, 0);
+
+    Serial.print("⏰ Date & Time: ");
+    Serial.println(timestamp);
 
     _display.print("T AHT20: ");
     _display.println(tempOk ? String(temp) : "Error");

@@ -12,10 +12,13 @@
 #include "TimeManager.h"
 
 OLED_Display oledDisplay(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600, 60000);
+TimeManager timeManager(&timeClient);
 FirebaseData firebaseData;
 FirebaseConfig config;
 FirebaseAuth auth;
-FirebaseManager firebase(&config, &auth, &firebaseData);
+FirebaseManager firebase(&config, &auth, &firebaseData, &timeManager);
 
 #define BLYNK_TEMPLATE_ID "TMPL4pAuw2iUr"
 #define BLYNK_TEMPLATE_NAME "Air Quality Monitor"
@@ -28,9 +31,6 @@ PM25_Sensor pm25(13, 15);
 Photoresistor lightSensor(A0);
 RGB_LED rgb(16, 0, 2);
 AirQualityManager airQualityManager(&sensor, &pm25, &lightSensor);
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600, 60000);
-TimeManager timeManager(&timeClient);
 
 unsigned long lastReadTime = 0;
 unsigned long lastPushTime = 0;
@@ -97,7 +97,7 @@ void loop()
       rgb.setColor(255, 255, 255);
 
     rgb.setBrightnessFromLight(data.lightLevel);
-    oledDisplay.showSensorData(data.temperature, data.tempValid, data.humidity, data.humidityValid, data.pressure, data.pressureValid, data.qualityLabel, data.pm25);
+    oledDisplay.showSensorData(data.temperature, data.tempValid, data.humidity, data.humidityValid, data.pressure, data.pressureValid, data.qualityLabel, data.pm25, timeManager.getFullTimestamp());
 
     Blynk.virtualWrite(V0, data.temperature);
     Blynk.virtualWrite(V1, data.humidity);

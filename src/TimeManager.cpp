@@ -29,3 +29,8 @@ String TimeManager::getFullTimestamp() const
     String date = String(ti->tm_mday) + "/" + String(ti->tm_mon + 1) + "/" + String(ti->tm_year + 1900);
     return date + " " + _client->getFormattedTime();
 }
+
+time_t TimeManager::getEpochTime() const
+{
+    return _client->getEpochTime();
+}

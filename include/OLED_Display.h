@@ -18,7 +18,8 @@ public:
                         float hum, bool humOk,
                         float pressure, bool pressureOk,
                         const String &airQualityLabel,
-                        float pm25);
+                        float pm25,
+                        const String &timestamp);
     void showLoadingAnimation(const String &message, int steps = 10, int delayMs = 150);
 
 private:
