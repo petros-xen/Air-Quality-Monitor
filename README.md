@@ -98,7 +98,7 @@ logs/
 ├── include/                    # Header files
 │   ├── AHT20_BMP280.h
 │   ├── AirQualityManager.h
-│   ├── credentials.example.h  # Template for secrets (do NOT commit credentials.h)
+│   ├── credentials.example.h  
 │   ├── credentials.h          # Your actual Wi-Fi + Firebase secrets (excluded from Git)
 │   ├── FirebaseManager.h
 │   ├── OLED_Display.h
@@ -112,7 +112,7 @@ logs/
 ├── src/                        # Source files
 │   ├── AHT20_BMP280.cpp
 │   ├── AirQualityManager.cpp
-│   ├── credentials.cpp
+│   ├── credentials.cpp         # Template for credential data (do NOT commit credentials.cpp)
 │   ├── FirebaseManager.cpp
 │   ├── main.cpp               # Main application logic
 │   ├── OLED_Display.cpp
