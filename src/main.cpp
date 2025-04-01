@@ -10,27 +10,32 @@
 #include "FirebaseManager.h"
 #include "AirQualityManager.h"
 #include "TimeManager.h"
+#include "MQTTManager.h"
 
 OLED_Display oledDisplay(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600, 60000);
-TimeManager timeManager(&timeClient);
-FirebaseData firebaseData;
-FirebaseConfig config;
-FirebaseAuth auth;
-FirebaseManager firebase(&config, &auth, &firebaseData, &timeManager);
-
-#define BLYNK_TEMPLATE_ID "TMPL4pAuw2iUr"
-#define BLYNK_TEMPLATE_NAME "Air Quality Monitor"
-#define BLYNK_AUTH_TOKEN "IKfxzj59C-yZxI0npMRsfW7NGGSyIkMN"
-
-#include <BlynkSimpleEsp8266.h>
-
 AHT20_BMP280 sensor;
 PM25_Sensor pm25(13, 15);
 Photoresistor lightSensor(A0);
 RGB_LED rgb(16, 0, 2);
 AirQualityManager airQualityManager(&sensor, &pm25, &lightSensor);
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600, 60000);
+TimeManager timeManager(&timeClient);
+
+FirebaseData firebaseData;
+FirebaseConfig config;
+FirebaseAuth auth;
+FirebaseManager firebase(&config, &auth, &firebaseData, &timeManager);
+
+WiFiClient espClient;
+MQTTManager mqttManager(espClient);
+
+#define BLYNK_TEMPLATE_ID "YOUR_TEMPLATE_ID"
+#define BLYNK_TEMPLATE_NAME " YOUR_TEMPLATE_NAME"
+#define BLYNK_AUTH_TOKEN "YOUR_AUTH_TOKEN"
+
+#include <BlynkSimpleEsp8266.h>
 
 unsigned long lastReadTime = 0;
 unsigned long lastPushTime = 0;
@@ -71,6 +76,7 @@ void setup()
   timeManager.begin();
   firebase.begin();
   Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_SSID, WIFI_PASSWORD);
+  mqttManager.begin(MQTT_SERVER, MQTT_PORT, MQTT_USER, MQTT_PASSWORD);
 
   rgb.begin();
   pm25.begin();
@@ -80,6 +86,9 @@ void setup()
 
 void loop()
 {
+  mqttManager.reconnect("AirQualityMonitor");
+  mqttManager.loop();
+
   Blynk.run();
   unsigned long currentTime = millis();
 
@@ -102,6 +111,8 @@ void loop()
     Blynk.virtualWrite(V0, data.temperature);
     Blynk.virtualWrite(V1, data.humidity);
     Blynk.virtualWrite(V2, data.pm25);
+
+    mqttManager.publishSensorData(data.temperature, data.humidity, data.pressure, data.pm25);
   }
 
   if (currentTime - lastPushTime >= pushInterval)
