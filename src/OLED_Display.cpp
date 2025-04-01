@@ -99,3 +99,24 @@ void OLED_Display::showLoadingAnimation(const String &message, int steps, int de
         delay(delayMs);
     }
 }
+
+void OLED_Display::updateProgressBar(const String &message, int percentage)
+{
+    _display.clearDisplay();
+    _display.setTextSize(1);
+    _display.setTextColor(WHITE);
+    _display.setCursor(0, 0);
+    _display.println(message);
+
+    int barX = 0;
+    int barY = 20;
+    int barWidth = SCREEN_WIDTH;
+    int barHeight = 10;
+
+    _display.drawRect(barX, barY, barWidth, barHeight, WHITE);
+
+    int fillWidth = (barWidth - 2) * percentage / 100;
+    _display.fillRect(barX + 1, barY + 1, fillWidth, barHeight - 2, WHITE);
+
+    _display.display();
+}

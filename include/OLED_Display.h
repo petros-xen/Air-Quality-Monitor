@@ -21,6 +21,7 @@ public:
                         float pm25,
                         const String &timestamp);
     void showLoadingAnimation(const String &message, int steps = 10, int delayMs = 150);
+    void updateProgressBar(const String &message, int percentage);
 
 private:
     Adafruit_SSD1306 _display;
