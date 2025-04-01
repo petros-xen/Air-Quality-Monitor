@@ -105,9 +105,11 @@ void OLED_Display::updateProgressBar(const String &message, int percentage)
     _display.clearDisplay();
     _display.setTextSize(1);
     _display.setTextColor(WHITE);
+
     _display.setCursor(0, 0);
     _display.println(message);
 
+    // Draw border for progress bar
     int barX = 0;
     int barY = 20;
     int barWidth = SCREEN_WIDTH;
@@ -115,8 +117,13 @@ void OLED_Display::updateProgressBar(const String &message, int percentage)
 
     _display.drawRect(barX, barY, barWidth, barHeight, WHITE);
 
-    int fillWidth = (barWidth - 2) * percentage / 100;
+    // Fill progress
+    int fillWidth = (percentage * (barWidth - 2)) / 100;
     _display.fillRect(barX + 1, barY + 1, fillWidth, barHeight - 2, WHITE);
+
+    // Show percentage text centered below the bar
+    _display.setCursor(0, 35);
+    _display.printf("Progress: %d%%", percentage);
 
     _display.display();
 }
