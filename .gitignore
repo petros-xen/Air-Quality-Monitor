@@ -20,3 +20,6 @@ Thumbs.db
 
 # Sensitive
 credentials.cpp
+
+platformio.ini
+.gitignore

@@ -72,7 +72,7 @@ void setup()
 
   timeManager.begin();
   firebase.begin();
-  otaManager.begin("AirQualityMonitor");
+  OTAManager::begin(&oledDisplay);
   mqttManager.begin(MQTT_SERVER, MQTT_PORT, MQTT_USER, MQTT_PASSWORD);
 
   rgb.begin();

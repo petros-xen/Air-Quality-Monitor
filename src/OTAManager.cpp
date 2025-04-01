@@ -1,26 +1,40 @@
 #include "OTAManager.h"
 
-void OTAManager::begin(const char *hostname)
+static OLED_Display *oled = nullptr;
+static int lastDisplayedProgress = -10;
+
+void OTAManager::begin(OLED_Display *display)
 {
-    ArduinoOTA.setHostname(hostname);
+    oled = display;
 
     ArduinoOTA.onStart([]()
-                       { Serial.println("🔄 OTA Update Start"); });
+                       {
+        Serial.println("🔄 OTA update started...");
+        if (oled) oled->showLoadingAnimation("OTA update started...", 14, 120); });
 
     ArduinoOTA.onEnd([]()
-                     { Serial.println("\n✅ OTA Update Finished"); });
+                     {
+        Serial.println("✅ OTA update complete!");
+        if (oled) oled->showLoadingAnimation("OTA complete!", 14, 120); });
+
+    static int lastDisplayedProgress = -10;
+
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
+                          {
+    int percent = (progress * 100) / total;
+    if (percent - lastDisplayedProgress >= 10) {  // Update every 10%
+        lastDisplayedProgress = percent;
+        String msg = "OTA " + String(percent) + "%";
+        Serial.println(msg);
+        if (oled) oled->showLoadingAnimation(msg, 14, 120);
+    } });
 
     ArduinoOTA.onError([](ota_error_t error)
                        {
         Serial.printf("❌ OTA Error[%u]: ", error);
-        if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-        else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-        else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-        else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-        else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
+        if (oled) oled->showLoadingAnimation("OTA Error!", 14, 120); });
 
     ArduinoOTA.begin();
-    Serial.println("🚀 OTA Ready");
 }
 
 void OTAManager::handle()
