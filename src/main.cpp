@@ -31,12 +31,6 @@ FirebaseManager firebase(&config, &auth, &firebaseData, &timeManager);
 WiFiClient espClient;
 MQTTManager mqttManager(espClient);
 
-#define BLYNK_TEMPLATE_ID "YOUR_TEMPLATE_ID"
-#define BLYNK_TEMPLATE_NAME " YOUR_TEMPLATE_NAME"
-#define BLYNK_AUTH_TOKEN "YOUR_AUTH_TOKEN"
-
-#include <BlynkSimpleEsp8266.h>
-
 unsigned long lastReadTime = 0;
 unsigned long lastPushTime = 0;
 const unsigned long readInterval = 10000;
@@ -75,7 +69,6 @@ void setup()
 
   timeManager.begin();
   firebase.begin();
-  Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_SSID, WIFI_PASSWORD);
   mqttManager.begin(MQTT_SERVER, MQTT_PORT, MQTT_USER, MQTT_PASSWORD);
 
   rgb.begin();
@@ -89,7 +82,6 @@ void loop()
   mqttManager.reconnect("AirQualityMonitor");
   mqttManager.loop();
 
-  Blynk.run();
   unsigned long currentTime = millis();
 
   if (currentTime - lastReadTime >= readInterval)
@@ -107,10 +99,6 @@ void loop()
 
     rgb.setBrightnessFromLight(data.lightLevel);
     oledDisplay.showSensorData(data.temperature, data.tempValid, data.humidity, data.humidityValid, data.pressure, data.pressureValid, data.qualityLabel, data.pm25, timeManager.getFullTimestamp());
-
-    Blynk.virtualWrite(V0, data.temperature);
-    Blynk.virtualWrite(V1, data.humidity);
-    Blynk.virtualWrite(V2, data.pm25);
 
     mqttManager.publishSensorData(data.temperature, data.humidity, data.pressure, data.pm25);
   }
