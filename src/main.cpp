@@ -11,6 +11,7 @@
 #include "AirQualityManager.h"
 #include "TimeManager.h"
 #include "MQTTManager.h"
+#include "OTAManager.h"
 
 OLED_Display oledDisplay(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 AHT20_BMP280 sensor;
@@ -30,6 +31,8 @@ FirebaseManager firebase(&config, &auth, &firebaseData, &timeManager);
 
 WiFiClient espClient;
 MQTTManager mqttManager(espClient);
+
+OTAManager otaManager;
 
 unsigned long lastReadTime = 0;
 unsigned long lastPushTime = 0;
@@ -69,6 +72,7 @@ void setup()
 
   timeManager.begin();
   firebase.begin();
+  otaManager.begin("AirQualityMonitor");
   mqttManager.begin(MQTT_SERVER, MQTT_PORT, MQTT_USER, MQTT_PASSWORD);
 
   rgb.begin();
@@ -81,6 +85,8 @@ void loop()
 {
   mqttManager.reconnect("AirQualityMonitor");
   mqttManager.loop();
+
+  OTAManager::handle();
 
   unsigned long currentTime = millis();
 
